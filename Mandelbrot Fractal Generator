@@ -1,0 +1,53 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+
+public class MandelbrotFractal extends JPanel {
+    private static final int WIDTH = 800;
+    private static final int HEIGHT = 800;
+    private static final int MAX_ITER = 1000;
+    private static final double ZOOM = 200;
+    private BufferedImage image;
+
+    public MandelbrotFractal() {
+        image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        generateFractal();
+    }
+
+    private void generateFractal() {
+        for (int x = 0; x < WIDTH; x++) {
+            for (int y = 0; y < HEIGHT; y++) {
+                double zx = 0;
+                double zy = 0;
+                double cx = (x - WIDTH / 2.0) / ZOOM;
+                double cy = (y - HEIGHT / 2.0) / ZOOM;
+                int iter = MAX_ITER;
+
+                while (zx * zx + zy * zy < 4 && iter > 0) {
+                    double tmp = zx * zx - zy * zy + cx;
+                    zy = 2.0 * zx * zy + cy;
+                    zx = tmp;
+                    iter--;
+                }
+
+                int color = iter | (iter << 8); // Create a color based on iterations
+                image.setRGB(x, y, color);
+            }
+        }
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawImage(image, 0, 0, this);
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Mandelbrot Fractal");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(WIDTH, HEIGHT);
+        frame.setResizable(false);
+        frame.add(new MandelbrotFractal());
+        frame.setVisible(true);
+    }
+}
